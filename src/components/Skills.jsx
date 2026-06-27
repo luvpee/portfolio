@@ -1,47 +1,7 @@
 import { motion } from 'framer-motion';
 
-// Brand color palette for each technology icon
-const iconColors = {
-  'C++': 'from-blue-500 to-blue-700',
-  Python: 'from-yellow-400 to-blue-500',
-  JavaScript: 'from-yellow-300 to-yellow-500',
-  SQL: 'from-orange-400 to-red-500',
-  C: 'from-slate-400 to-slate-600',
-  Bash: 'from-green-400 to-emerald-600',
-  'React.js': 'from-cyan-400 to-blue-500',
-  'Node.js': 'from-green-500 to-green-700',
-  'Express.js': 'from-slate-400 to-slate-600',
-  'Socket.IO': 'from-slate-500 to-slate-700',
-  'REST APIs': 'from-teal-400 to-cyan-500',
-  JWT: 'from-pink-400 to-rose-600',
-  Streamlit: 'from-red-400 to-pink-500',
-  MongoDB: 'from-green-500 to-emerald-700',
-  PostgreSQL: 'from-blue-400 to-indigo-600',
-  MySQL: 'from-orange-400 to-sky-500',
-  Firebase: 'from-amber-400 to-orange-600',
-  Supabase: 'from-emerald-400 to-green-600',
-  'MongoDB Atlas': 'from-green-500 to-teal-600',
-  Render: 'from-slate-300 to-slate-500',
-  Vercel: 'from-slate-100 to-slate-400',
-  LangGraph: 'from-purple-400 to-pink-600',
-  LangChain: 'from-emerald-400 to-teal-600',
-  'LLM APIs': 'from-violet-400 to-purple-600',
-  ChromaDB: 'from-orange-400 to-rose-500',
-  'Vector Embeddings': 'from-fuchsia-400 to-purple-600',
-  RAG: 'from-indigo-400 to-blue-600',
-  'Prompt Engineering': 'from-sky-400 to-indigo-500',
-  'Data Structures & Algorithms': 'from-red-400 to-orange-500',
-  OOP: 'from-blue-400 to-cyan-500',
-  'Operating Systems': 'from-slate-400 to-zinc-600',
-  DBMS: 'from-cyan-400 to-blue-600',
-  'Computer Networks': 'from-teal-400 to-emerald-500',
-  'System Design': 'from-indigo-400 to-purple-600',
-  Git: 'from-orange-500 to-red-600',
-  GitHub: 'from-slate-200 to-slate-500',
-  Linux: 'from-yellow-400 to-orange-500',
-  Figma: 'from-pink-400 to-purple-500',
-  Postman: 'from-orange-400 to-red-500',
-};
+// Single accent for icons — warm amber
+const accent = '#f59e0b';
 
 // SVG icons (stroke-based, color follows currentColor so we can tint them)
 const Icon = ({ name }) => {
@@ -374,14 +334,14 @@ const Icon = ({ name }) => {
   }
 };
 
-// Category accent palette (gradient + glow)
+// Category accent — single neutral
 const categoryAccents = {
-  Languages: { ring: 'from-amber-500/40 to-rose-500/0', icon: 'from-amber-400 to-rose-500' },
-  'Web & Frameworks': { ring: 'from-cyan-500/40 to-blue-500/0', icon: 'from-cyan-400 to-blue-600' },
-  'Databases & Cloud': { ring: 'from-emerald-500/40 to-teal-500/0', icon: 'from-emerald-400 to-teal-600' },
-  'AI / ML Tools': { ring: 'from-fuchsia-500/40 to-purple-500/0', icon: 'from-fuchsia-400 to-purple-600' },
-  'Computer Science': { ring: 'from-indigo-500/40 to-violet-500/0', icon: 'from-indigo-400 to-violet-600' },
-  Tools: { ring: 'from-orange-500/40 to-amber-500/0', icon: 'from-orange-400 to-amber-500' },
+  Languages: { ring: 'from-white/[0.06] to-white/0', icon: 'bg-[#0e1014] border border-white/[0.08] text-[#f59e0b]' },
+  'Web & Frameworks': { ring: 'from-white/[0.06] to-white/0', icon: 'bg-[#0e1014] border border-white/[0.08] text-[#f59e0b]' },
+  'Databases & Cloud': { ring: 'from-white/[0.06] to-white/0', icon: 'bg-[#0e1014] border border-white/[0.08] text-[#f59e0b]' },
+  'AI / ML Tools': { ring: 'from-white/[0.06] to-white/0', icon: 'bg-[#0e1014] border border-white/[0.08] text-[#f59e0b]' },
+  'Computer Science': { ring: 'from-white/[0.06] to-white/0', icon: 'bg-[#0e1014] border border-white/[0.08] text-[#f59e0b]' },
+  Tools: { ring: 'from-white/[0.06] to-white/0', icon: 'bg-[#0e1014] border border-white/[0.08] text-[#f59e0b]' },
 };
 
 const skillCategories = [
@@ -395,10 +355,8 @@ const skillCategories = [
 
 export default function Skills() {
   return (
-    <section id="skills" className="relative py-24 px-6 bg-[#0b0f14] overflow-hidden">
-      {/* Decorative background glows */}
-      <div className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-indigo-600/10 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-fuchsia-600/10 blur-3xl" />
+    <section id="skills" className="relative py-24 px-6 bg-[#0e1014] overflow-hidden">
+      <div className="absolute inset-0 grid-bg opacity-50" />
 
       <div className="relative max-w-6xl mx-auto">
         <motion.div
@@ -408,15 +366,15 @@ export default function Skills() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <span className="inline-flex items-center gap-2 text-indigo-400 font-semibold text-sm uppercase tracking-[0.2em]">
-            <span className="h-px w-8 bg-indigo-500/60" />
+          <span className="inline-flex items-center gap-2 text-[#a8adb6] font-semibold text-sm uppercase tracking-[0.3em]">
+            <span className="h-px w-10 bg-gradient-to-r from-transparent to-white/30" />
             My Expertise
-            <span className="h-px w-8 bg-indigo-500/60" />
+            <span className="h-px w-10 bg-gradient-to-l from-transparent to-white/30" />
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-100 mt-3">
-            Tech <span className="bg-gradient-to-r from-indigo-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">Stack</span>
+          <h2 className="text-4xl md:text-5xl font-bold text-[#e8eaed] mt-4 tracking-tight">
+            Tech <span className="text-gradient-accent">Stack</span>
           </h2>
-          <p className="text-slate-400 mt-4 max-w-2xl mx-auto">
+          <p className="text-[#a8adb6] mt-4 max-w-2xl mx-auto">
             Technologies I work with to bring ideas to life — hover any chip to feel it come alive.
           </p>
         </motion.div>
@@ -432,52 +390,46 @@ export default function Skills() {
                 viewport={{ once: true }}
                 transition={{ delay: catIndex * 0.08, duration: 0.5 }}
                 whileHover={{ y: -4 }}
-                className="group relative p-6 rounded-2xl bg-slate-900/70 border border-slate-800 backdrop-blur-sm overflow-hidden transition-colors duration-300 hover:border-slate-700"
+                className="group relative p-6 rounded-2xl bg-[#181b21]/80 border border-white/[0.06] backdrop-blur-sm overflow-hidden transition-colors duration-300 hover:border-white/[0.14]"
               >
-                {/* Gradient sweep on hover */}
                 <div className={`pointer-events-none absolute -inset-px rounded-2xl bg-gradient-to-br ${accent.ring} opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-md`} />
-                {/* Top accent bar */}
-                <div className={`absolute top-0 left-0 h-[2px] w-0 group-hover:w-full bg-gradient-to-r ${accent.icon} transition-all duration-700 ease-out`} />
+                <div className="absolute top-0 left-0 h-px w-0 group-hover:w-full bg-[#f59e0b] transition-all duration-700 ease-out" />
 
                 <div className="relative">
                   <div className="flex items-center gap-3 mb-5">
-                    <span className={`inline-flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br ${accent.icon} text-white shadow-lg shadow-black/30 ring-1 ring-white/10`}>
+                    <span className={`inline-flex items-center justify-center w-9 h-9 rounded-lg ${accent.icon}`}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
                         <path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 14.3 7.2 16.9l.9-5.4L4.2 7.7l5.4-.8z" />
                       </svg>
                     </span>
-                    <h3 className="text-lg font-semibold text-slate-100 tracking-tight">{category.title}</h3>
-                    <span className="ml-auto text-xs font-mono text-slate-500 group-hover:text-slate-300 transition-colors">
+                    <h3 className="text-lg font-semibold text-[#e8eaed] tracking-tight">{category.title}</h3>
+                    <span className="ml-auto text-xs font-mono text-[#6e747e] group-hover:text-[#a8adb6] transition-colors">
                       {category.skills.length}
                     </span>
                   </div>
 
                   <div className="flex flex-wrap gap-2.5">
-                    {category.skills.map((skill, i) => {
-                      const grad = iconColors[skill] || 'from-slate-400 to-slate-600';
-                      return (
-                        <motion.div
-                          key={skill}
-                          initial={{ opacity: 0, y: 8 }}
-                          whileInView={{ opacity: 1, y: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: catIndex * 0.08 + i * 0.04, duration: 0.35 }}
-                          whileHover={{ y: -3, scale: 1.04 }}
-                          whileTap={{ scale: 0.97 }}
-                          className="group/chip relative"
-                        >
-                          <div className={`absolute -inset-0.5 rounded-full bg-gradient-to-r ${grad} opacity-0 group-hover/chip:opacity-100 blur-sm transition-opacity duration-300`} />
-                          <div className="relative flex items-center gap-2 pl-1.5 pr-3.5 py-1.5 rounded-full bg-slate-950/80 border border-slate-800 group-hover/chip:border-transparent transition-all duration-300">
-                            <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-br ${grad} text-white shadow-sm ring-1 ring-white/10 transition-transform duration-300 group-hover/chip:rotate-[8deg] group-hover/chip:scale-110`}>
-                              <Icon name={skill} />
-                            </span>
-                            <span className="text-sm font-medium text-slate-300 group-hover/chip:text-white transition-colors duration-300">
-                              {skill}
-                            </span>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
+                    {category.skills.map((skill, i) => (
+                      <motion.div
+                        key={skill}
+                        initial={{ opacity: 0, y: 8 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: catIndex * 0.08 + i * 0.04, duration: 0.35 }}
+                        whileHover={{ y: -2, scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        className="group/chip relative"
+                      >
+                        <div className="relative flex items-center gap-2 pl-1.5 pr-3.5 py-1.5 rounded-full bg-[#0e1014]/90 border border-white/[0.06] group-hover/chip:border-[#f59e0b]/40 transition-all duration-300">
+                          <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#181b21] border border-white/[0.08] text-[#f59e0b] transition-all duration-300 group-hover/chip:border-[#f59e0b]/60">
+                            <Icon name={skill} />
+                          </span>
+                          <span className="text-sm font-medium text-[#a8adb6] group-hover/chip:text-[#e8eaed] transition-colors duration-300">
+                            {skill}
+                          </span>
+                        </div>
+                      </motion.div>
+                    ))}
                   </div>
                 </div>
               </motion.div>

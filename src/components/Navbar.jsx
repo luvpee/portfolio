@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, FileDown } from 'lucide-react';
 import { useState } from 'react';
 
 const navLinks = [
@@ -16,9 +16,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
 
   useState(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -30,18 +28,26 @@ export default function Navbar() {
         animate={{ y: 0 }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? 'bg-[#0b0f14]/90 backdrop-blur-lg shadow-lg border-b border-slate-800'
-            : 'bg-[#06070a]/70 backdrop-blur-sm'
+            ? 'bg-[#0e1014]/85 backdrop-blur-xl shadow-[0_1px_0_0_rgba(255,255,255,0.06)] border-b border-white/[0.06]'
+            : 'bg-[#0e1014]/40 backdrop-blur-sm'
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <motion.a
               href="#"
-              className="text-lg font-semibold tracking-[0.25em] text-slate-100 uppercase"
-              whileHover={{ scale: 1.05 }}
+              className="group flex items-center gap-2"
+              whileHover={{ scale: 1.02 }}
             >
-              Home
+              <span className="inline-flex items-center justify-center w-8 h-8 rounded-md bg-[#181b21] border border-white/[0.08] text-[#f59e0b]">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="w-4 h-4">
+                  <path d="M4 7l8-4 8 4-8 4-8-4z" />
+                  <path d="M4 12l8 4 8-4M4 17l8 4 8-4" />
+                </svg>
+              </span>
+              <span className="text-sm font-semibold tracking-[0.25em] text-[#e8eaed] uppercase">
+                Lovepreet
+              </span>
             </motion.a>
 
             <div className="hidden md:flex items-center gap-8">
@@ -49,35 +55,36 @@ export default function Navbar() {
                 <a
                   key={link.name}
                   href={link.href}
-                  className="text-slate-300 hover:text-indigo-400 transition-colors duration-200 text-sm font-medium"
+                  className="relative text-[#a8adb6] hover:text-[#e8eaed] transition-colors duration-200 text-sm font-medium group"
                 >
                   {link.name}
+                  <span className="absolute -bottom-1.5 left-0 right-0 h-px bg-[#f59e0b] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center" />
                 </a>
               ))}
+              <a
+                href="/resume.pdf"
+                download="Lovepreet-Singh-Kaler-Resume.pdf"
+                className="group inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-white/[0.08] bg-[#181b21]/70 text-[#e8eaed] text-sm font-semibold hover:border-[#f59e0b]/40 hover:bg-[#1e2229] transition-all duration-300"
+              >
+                <FileDown className="w-3.5 h-3.5 text-[#f59e0b]" />
+                Résumé
+              </a>
             </div>
 
             <button
-              className="md:hidden p-2"
+              className="md:hidden p-2 text-[#e8eaed]"
               onClick={() => setIsOpen(!isOpen)}
             >
-              {isOpen ? (
-                <X className="w-6 h-6 text-slate-100" />
-              ) : (
-                <Menu className="w-6 h-6 text-slate-100" />
-              )}
+              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
       </motion.nav>
 
-      {/* Mobile Menu */}
       <motion.div
         initial={false}
-        animate={{
-          height: isOpen ? 'auto' : 0,
-          opacity: isOpen ? 1 : 0,
-        }}
-        className="md:hidden fixed top-[72px] left-0 right-0 bg-[#0b0f14] backdrop-blur-lg z-40 overflow-hidden border-b border-slate-800"
+        animate={{ height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0 }}
+        className="md:hidden fixed top-[72px] left-0 right-0 bg-[#0e1014]/95 backdrop-blur-xl z-40 overflow-hidden border-b border-white/[0.06]"
       >
         <div className="px-6 py-6 flex flex-col gap-4">
           {navLinks.map((link) => (
@@ -85,11 +92,20 @@ export default function Navbar() {
               key={link.name}
               href={link.href}
               onClick={() => setIsOpen(false)}
-              className="text-slate-300 hover:text-indigo-400 transition-colors text-lg font-medium"
+              className="text-[#a8adb6] hover:text-[#e8eaed] transition-colors text-lg font-medium"
             >
               {link.name}
             </a>
           ))}
+          <a
+            href="/resume.pdf"
+            download="Lovepreet-Singh-Kaler-Resume.pdf"
+            onClick={() => setIsOpen(false)}
+            className="mt-2 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-white/[0.08] bg-[#181b21] text-[#e8eaed] font-semibold"
+          >
+            <FileDown className="w-4 h-4 text-[#f59e0b]" />
+            Download Résumé
+          </a>
         </div>
       </motion.div>
     </>

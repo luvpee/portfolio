@@ -1,33 +1,33 @@
 @import "tailwindcss";
 
 /* ============================================
-   Cyber / Neon / Synthwave theme
+   Refined dark grey monochrome + amber accent
    ============================================ */
 
 @theme {
-  --color-primary: #00d4ff;    /* electric blue */
-  --color-secondary: #ff2e92;  /* hot magenta */
-  --color-accent: #b6ff3c;     /* neon lime */
-  --color-cyan-glow: #00f0ff;
+  --color-primary: #f59e0b;   /* single warm accent — used sparingly */
+  --color-secondary: #f59e0b;
+  --color-accent: #f59e0b;
 }
 
 :root {
   color-scheme: dark;
-  --bg: #05060a;
-  --bg-elev: #0a0d14;
-  --surface: #0b0e16;
-  --surface-2: #11151f;
-  --surface-3: #161c2a;
-  --text: #e2e8f0;
-  --text-muted: #94a3b8;
-  --text-soft: #64748b;
-  --border: rgba(0, 212, 255, 0.10);
-  --border-strong: rgba(0, 212, 255, 0.22);
+  --bg: #0e1014;             /* page base — dark grey, not pure black */
+  --bg-elev: #14171c;
+  --surface: #181b21;        /* card surface */
+  --surface-2: #1e2229;      /* hover surface */
+  --surface-3: #252a32;      /* deepest layer */
 
-  --neon-blue: #00d4ff;
-  --neon-magenta: #ff2e92;
-  --neon-lime: #b6ff3c;
-  --neon-purple: #a855f7;
+  --text: #e8eaed;           /* primary text — soft white */
+  --text-muted: #a8adb6;     /* secondary */
+  --text-soft: #6e747e;      /* tertiary */
+
+  --border: rgba(255, 255, 255, 0.06);
+  --border-strong: rgba(255, 255, 255, 0.12);
+
+  --accent: #f59e0b;         /* warm amber — only pop of color */
+  --accent-soft: rgba(245, 158, 11, 0.12);
+  --accent-line: rgba(245, 158, 11, 0.35);
 }
 
 html {
@@ -40,36 +40,19 @@ body {
   overflow-x: hidden;
   color: var(--text);
   background-color: var(--bg);
+  /* Subtle vignette — no rainbow washes */
   background-image:
-    radial-gradient(ellipse 80% 60% at 15% 0%, rgba(0, 212, 255, 0.10), transparent 60%),
-    radial-gradient(ellipse 70% 50% at 85% 30%, rgba(255, 46, 146, 0.08), transparent 60%),
-    radial-gradient(ellipse 90% 70% at 50% 100%, rgba(168, 85, 247, 0.06), transparent 70%);
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(255, 255, 255, 0.03), transparent 70%);
   background-attachment: fixed;
 }
 
-/* Subtle grid overlay for the synthwave feel — toggle by adding .grid-bg to a section */
+/* Hairline grid — barely visible, just adds texture */
 .grid-bg {
   background-image:
-    linear-gradient(rgba(0, 212, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 212, 255, 0.04) 1px, transparent 1px);
-  background-size: 48px 48px;
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 56px 56px;
   background-position: -1px -1px;
-}
-
-/* Scanline overlay — very faint */
-.scanlines::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 212, 255, 0.025) 0px,
-    rgba(0, 212, 255, 0.025) 1px,
-    transparent 1px,
-    transparent 3px
-  );
-  z-index: 0;
 }
 
 #root {
@@ -78,54 +61,33 @@ body {
 }
 
 /* ============================================
-   Gradient text utilities
+   Single accent gradient text
    ============================================ */
 
 .text-gradient {
   background-clip: text;
   color: transparent;
-  background-image: linear-gradient(90deg, #00d4ff 0%, #a855f7 50%, #ff2e92 100%);
+  background-image: linear-gradient(180deg, #f5f5f5 0%, #a8adb6 100%);
 }
 
-.text-gradient-cyber {
+.text-gradient-accent {
   background-clip: text;
   color: transparent;
-  background-image: linear-gradient(90deg, #00d4ff 0%, #00f0ff 40%, #b6ff3c 100%);
-}
-
-.text-gradient-sunset {
-  background-clip: text;
-  color: transparent;
-  background-image: linear-gradient(90deg, #ff2e92 0%, #a855f7 50%, #00d4ff 100%);
+  background-image: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
 }
 
 /* ============================================
-   Neon glow utilities
+   Subtle glow (single accent only)
    ============================================ */
 
-.glow-blue {
+.glow-accent {
   box-shadow:
-    0 0 0 1px rgba(0, 212, 255, 0.4),
-    0 0 24px -4px rgba(0, 212, 255, 0.55),
-    0 0 60px -10px rgba(0, 212, 255, 0.35);
-}
-
-.glow-magenta {
-  box-shadow:
-    0 0 0 1px rgba(255, 46, 146, 0.4),
-    0 0 24px -4px rgba(255, 46, 146, 0.55),
-    0 0 60px -10px rgba(255, 46, 146, 0.35);
-}
-
-.glow-lime {
-  box-shadow:
-    0 0 0 1px rgba(182, 255, 60, 0.4),
-    0 0 24px -4px rgba(182, 255, 60, 0.45),
-    0 0 60px -10px rgba(182, 255, 60, 0.25);
+    0 0 0 1px var(--accent-line),
+    0 0 24px -6px rgba(245, 158, 11, 0.35);
 }
 
 /* ============================================
-   Slate overrides — bring back the dark feel
+   Slate overrides — keep everything on the grey ramp
    ============================================ */
 
 .dark { color-scheme: dark; }
@@ -133,38 +95,49 @@ body {
 .bg-white { background-color: var(--surface) !important; }
 .bg-slate-50 { background-color: var(--surface-2) !important; }
 .bg-slate-100 { background-color: var(--surface-3) !important; }
-.bg-slate-200 { background-color: #1f2738 !important; }
+.bg-slate-200 { background-color: #2c313a !important; }
 
 .border-slate-200 { border-color: var(--border) !important; }
 .border-slate-300 { border-color: var(--border-strong) !important; }
 
 .text-slate-900 { color: var(--text) !important; }
-.text-slate-800 { color: #e2e8f0 !important; }
+.text-slate-800 { color: #e8eaed !important; }
 .text-slate-700 { color: var(--text-muted) !important; }
 .text-slate-600 { color: var(--text-soft) !important; }
-.text-slate-500 { color: #64748b !important; }
+.text-slate-500 { color: #6e747e !important; }
 
 /* ============================================
-   Misc fixes
+   Misc
    ============================================ */
 
 * { box-sizing: border-box; }
 img, video { max-width: 100%; }
 
-/* Selection — keep brand-consistent */
 ::selection {
-  background: rgba(0, 212, 255, 0.35);
+  background: var(--accent-soft);
   color: #fff;
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: #05060a; }
+::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #00d4ff, #a855f7);
+  background: var(--surface-3);
   border-radius: 8px;
-  border: 2px solid #05060a;
+  border: 2px solid var(--bg);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #00f0ff, #ff2e92);
+  background: var(--text-soft);
 }
+
+/* Heatmap horizontal scroll — slim amber-tinted scrollbar */
+.heatmap-scroll::-webkit-scrollbar { height: 6px; }
+.heatmap-scroll::-webkit-scrollbar-track { background: transparent; }
+.heatmap-scroll::-webkit-scrollbar-thumb {
+  background: rgba(245, 158, 11, 0.25);
+  border-radius: 6px;
+  border: none;
+}
+.heatmap-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(245, 158, 11, 0.55);
+}
+.heatmap-scroll { scrollbar-width: thin; scrollbar-color: rgba(245, 158, 11, 0.25) transparent; }
