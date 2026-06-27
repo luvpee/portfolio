@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Code, Calendar, Star, CheckCircle, Zap, RefreshCw } from 'lucide-react';
-import { useTheme } from '../context/ThemeContext.jsx';
 
 // LeetCode Stats API
 async function fetchLeetCodeStats(username) {
@@ -19,8 +18,8 @@ async function fetchLeetCodeStats(username) {
       mediumSolved: data.mediumSolved || 0,
       hardSolved: data.hardSolved || 0,
       ranking: data.ranking || 0,
-      contributionPoints: data.contributionPoints || 0,
       acceptanceRate: data.acceptanceRate || 0,
+      submissionCalendar: data.submissionCalendar || {},
     };
   } catch (error) {
     console.error('LeetCode fetch error:', error);
@@ -93,75 +92,70 @@ async function fetchCodeforcesHeatmap(username) {
 }
 
 // Heatmap Component
-function Heatmap({ data, isDark }) {
+function Heatmap({ data, title, colorStart = '#6366f1', colorEnd = '#a855f7' }) {
   const today = new Date();
-  const weeks = 26; // Show 26 weeks
+  const weeks = 20;
 
-  const getDaysInYear = () => {
+  const getDays = () => {
     const days = [];
     for (let i = weeks * 7 - 1; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
       const dateStr = date.toISOString().split('T')[0];
-      days.push({
-        date: dateStr,
-        count: data[dateStr] || 0,
-        dayIndex: date.getDay(),
-      });
+      days.push({ date: dateStr, count: data[dateStr] || 0 });
     }
     return days;
   };
 
-  const daysData = getDaysInYear();
+  const daysData = getDays();
   const maxCount = Math.max(...daysData.map((d) => d.count), 1);
 
   const getColor = (count) => {
-    if (count === 0) return isDark ? '#1e293b' : '#e2e8f0';
+    if (count === 0) return '#111827';
     const intensity = Math.min(count / Math.max(maxCount, 5), 1);
-    if (intensity < 0.25) return isDark ? '#4c1d95' : '#c7d2fe';
-    if (intensity < 0.5) return isDark ? '#6d28d9' : '#a5b4fc';
-    if (intensity < 0.75) return isDark ? '#8b5cf6' : '#818cf8';
-    return isDark ? '#a78bfa' : '#6366f1';
+    if (intensity < 0.25) return '#312e81';
+    if (intensity < 0.5) return '#4c1d95';
+    if (intensity < 0.75) return '#6d28d9';
+    return '#8b5cf6';
   };
 
   // Group by weeks
   const weekGroups = [];
   for (let w = 0; w < weeks; w++) {
-    const weekDays = daysData.filter((d) => {
-      const dayIndex = daysData.indexOf(d);
-      return Math.floor(dayIndex / 7) === w;
-    });
-    weekGroups.push(weekDays);
+    const startIdx = w * 7;
+    weekGroups.push(daysData.slice(startIdx, startIdx + 7));
   }
 
   return (
-    <div className="overflow-x-auto">
-      <div className="flex gap-[3px]">
-        {weekGroups.map((week, weekIndex) => (
-          <div key={weekIndex} className="flex flex-col gap-[3px]">
-            {week.map((day) => (
+    <div className="rounded-xl border border-slate-800/80 bg-slate-950/70 p-4 shadow-inner shadow-black/20">
+      <div className="overflow-x-auto">
+        <div className="flex gap-[3px]">
+          {weekGroups.map((week, weekIndex) => (
+            <div key={weekIndex} className="flex flex-col gap-[3px]">
+              {week.map((day) => (
+                <div
+                  key={day.date}
+                  className="w-3 h-3 rounded-[2px] cursor-pointer transition-transform hover:scale-125"
+                  style={{ backgroundColor: getColor(day.count) }}
+                  title={`${day.date}: ${day.count} submissions`}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-end items-center gap-2 mt-3 text-xs text-slate-400">
+          <span>Less</span>
+          <div className="flex gap-0.5">
+            {[0, 0.25, 0.5, 0.75, 1].map((intensity) => (
               <div
-                key={day.date}
-                className="w-3 h-3 rounded-[2px] cursor-pointer transition-transform hover:scale-125"
-                style={{ backgroundColor: getColor(day.count) }}
-                title={`${day.date}: ${day.count} submissions`}
+                key={intensity}
+                className="w-3 h-3 rounded-[2px]"
+                style={{ backgroundColor: getColor(intensity * Math.max(maxCount, 5)) }}
               />
             ))}
           </div>
-        ))}
-      </div>
-      <div className="flex justify-end items-center gap-2 mt-3 text-xs text-slate-500 dark:text-slate-400">
-        <span>Less</span>
-        <div className="flex gap-0.5">
-          {[0, 0.25, 0.5, 0.75, 1].map((intensity) => (
-            <div
-              key={intensity}
-              className="w-3 h-3 rounded-[2px]"
-              style={{ backgroundColor: getColor(intensity * Math.max(maxCount, 5)) }}
-            />
-          ))}
+          <span>More</span>
         </div>
-        <span>More</span>
       </div>
     </div>
   );
@@ -170,20 +164,19 @@ function Heatmap({ data, isDark }) {
 // Stat Card Component
 function StatCard({ icon: Icon, label, value, color }) {
   return (
-    <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+    <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/70 border border-slate-800">
       <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${color}`}>
         <Icon className="w-4 h-4 text-white" />
       </div>
       <div>
-        <div className="text-lg font-bold text-slate-900 dark:text-white">{value}</div>
-        <div className="text-xs text-slate-500 dark:text-slate-400">{label}</div>
+        <div className="text-lg font-bold text-slate-100">{value}</div>
+        <div className="text-xs text-slate-400">{label}</div>
       </div>
     </div>
   );
 }
 
 export default function CodingStats({ leetcodeUsername, codeforcesUsername }) {
-  const { isDark } = useTheme();
   const [leetcodeStats, setLeetcodeStats] = useState(null);
   const [codeforcesStats, setCodeforcesStats] = useState(null);
   const [codeforcesProblems, setCodeforcesProblems] = useState(0);
@@ -238,7 +231,7 @@ export default function CodingStats({ leetcodeUsername, codeforcesUsername }) {
   };
 
   return (
-    <section id="coding" className="py-24 px-6 bg-white dark:bg-slate-900 transition-colors duration-300">
+    <section id="coding" className="py-24 px-6 bg-[#0b0f14]">
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -252,15 +245,15 @@ export default function CodingStats({ leetcodeUsername, codeforcesUsername }) {
             <button
               onClick={handleRefresh}
               disabled={refreshing}
-              className="p-2 rounded-lg bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 transition-colors disabled:opacity-50"
+              className="p-2 rounded-lg bg-slate-900/80 hover:bg-slate-800 transition-colors disabled:opacity-50 border border-slate-800"
             >
-              <RefreshCw className={`w-4 h-4 text-slate-600 dark:text-slate-300 ${refreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-4 h-4 text-slate-300 ${refreshing ? 'animate-spin' : ''}`} />
             </button>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mt-2">
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-100 mt-2">
             Coding Profiles
           </h2>
-          <p className="text-slate-600 dark:text-slate-400 mt-4 max-w-2xl mx-auto">
+          <p className="text-slate-400 mt-4 max-w-2xl mx-auto">
             Track my competitive programming journey
           </p>
         </motion.div>
@@ -269,7 +262,7 @@ export default function CodingStats({ leetcodeUsername, codeforcesUsername }) {
           <div className="flex items-center justify-center h-64">
             <div className="flex flex-col items-center gap-4">
               <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-              <p className="text-slate-500 dark:text-slate-400">Loading coding stats...</p>
+              <p className="text-slate-400">Loading coding stats...</p>
             </div>
           </div>
         ) : (
@@ -277,14 +270,14 @@ export default function CodingStats({ leetcodeUsername, codeforcesUsername }) {
             {/* Stats Cards */}
             <div className="grid md:grid-cols-2 gap-8 mb-8">
               {/* LeetCode Card */}
-              <div className="p-6 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+              <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center">
                       <span className="text-2xl">💻</span>
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white">LeetCode</h3>
+                      <h3 className="text-lg font-bold text-slate-100">LeetCode</h3>
                       <a
                         href={`https://leetcode.com/${leetcodeUsername}`}
                         target="_blank"
@@ -298,60 +291,69 @@ export default function CodingStats({ leetcodeUsername, codeforcesUsername }) {
                 </div>
 
                 {leetcodeStats ? (
-                  <div className="grid grid-cols-2 gap-3">
-                    <StatCard
-                      icon={CheckCircle}
-                      label="Total Solved"
-                      value={leetcodeStats.totalSolved}
-                      color="bg-indigo-500"
-                    />
-                    <StatCard
-                      icon={Trophy}
-                      label="Global Ranking"
-                      value={`#${leetcodeStats.ranking}`}
-                      color="bg-purple-500"
-                    />
-                    <StatCard
-                      icon={Zap}
-                      label="Easy"
-                      value={leetcodeStats.easySolved}
-                      color="bg-green-500"
-                    />
-                    <StatCard
-                      icon={Code}
-                      label="Medium"
-                      value={leetcodeStats.mediumSolved}
-                      color="bg-yellow-500"
-                    />
-                    <StatCard
-                      icon={Star}
-                      label="Hard"
-                      value={leetcodeStats.hardSolved}
-                      color="bg-red-500"
-                    />
-                    <StatCard
-                      icon={CheckCircle}
-                      label="Accept Rate"
-                      value={`${leetcodeStats.acceptanceRate}%`}
-                      color="bg-blue-500"
-                    />
-                  </div>
+                  <>
+                    <div className="grid grid-cols-2 gap-3 mb-6">
+                      <StatCard
+                        icon={CheckCircle}
+                        label="Total Solved"
+                        value={leetcodeStats.totalSolved}
+                        color="bg-indigo-500"
+                      />
+                      <StatCard
+                        icon={Trophy}
+                        label="Global Ranking"
+                        value={`#${leetcodeStats.ranking}`}
+                        color="bg-purple-500"
+                      />
+                      <StatCard
+                        icon={Zap}
+                        label="Easy"
+                        value={leetcodeStats.easySolved}
+                        color="bg-green-500"
+                      />
+                      <StatCard
+                        icon={Code}
+                        label="Medium"
+                        value={leetcodeStats.mediumSolved}
+                        color="bg-yellow-500"
+                      />
+                      <StatCard
+                        icon={Star}
+                        label="Hard"
+                        value={leetcodeStats.hardSolved}
+                        color="bg-red-500"
+                      />
+                      <StatCard
+                        icon={CheckCircle}
+                        label="Accept Rate"
+                        value={`${leetcodeStats.acceptanceRate}%`}
+                        color="bg-blue-500"
+                      />
+                    </div>
+                    {/* LeetCode Heatmap */}
+                    {Object.keys(leetcodeStats.submissionCalendar || {}).length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-semibold text-slate-300 mb-3">Activity Heatmap</h4>
+                        <Heatmap data={leetcodeStats.submissionCalendar} title="LeetCode" />
+                      </div>
+                    )}
+                  </>
                 ) : (
-                  <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+                  <div className="text-center py-8 text-slate-400">
                     <p>Unable to load LeetCode stats</p>
                   </div>
                 )}
               </div>
 
               {/* Codeforces Card */}
-              <div className="p-6 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+              <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
                       <span className="text-2xl">🏆</span>
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white">Codeforces</h3>
+                      <h3 className="text-lg font-bold text-slate-100">Codeforces</h3>
                       <a
                         href={`https://codeforces.com/profile/${codeforcesUsername}`}
                         target="_blank"
@@ -365,54 +367,48 @@ export default function CodingStats({ leetcodeUsername, codeforcesUsername }) {
                 </div>
 
                 {codeforcesStats ? (
-                  <div className="grid grid-cols-2 gap-3">
-                    <StatCard
-                      icon={Trophy}
-                      label="Current Rating"
-                      value={codeforcesStats.rating}
-                      color="bg-blue-500"
-                    />
-                    <StatCard
-                      icon={Star}
-                      label="Max Rating"
-                      value={codeforcesStats.maxRating}
-                      color="bg-purple-500"
-                    />
-                    <StatCard
-                      icon={CheckCircle}
-                      label="Problems Solved"
-                      value={codeforcesProblems}
-                      color="bg-green-500"
-                    />
-                    <StatCard
-                      icon={Code}
-                      label="Rank"
-                      value={codeforcesStats.rank}
-                      color="bg-orange-500"
-                    />
-                  </div>
+                  <>
+                    <div className="grid grid-cols-2 gap-3 mb-6">
+                      <StatCard
+                        icon={Trophy}
+                        label="Current Rating"
+                        value={codeforcesStats.rating}
+                        color="bg-blue-500"
+                      />
+                      <StatCard
+                        icon={Star}
+                        label="Max Rating"
+                        value={codeforcesStats.maxRating}
+                        color="bg-purple-500"
+                      />
+                      <StatCard
+                        icon={CheckCircle}
+                        label="Problems Solved"
+                        value={codeforcesProblems}
+                        color="bg-green-500"
+                      />
+                      <StatCard
+                        icon={Code}
+                        label="Rank"
+                        value={codeforcesStats.rank}
+                        color="bg-orange-500"
+                      />
+                    </div>
+                    {/* Codeforces Heatmap */}
+                    {Object.keys(codeforcesHeatmap).length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-semibold text-slate-300 mb-3">Activity Heatmap</h4>
+                        <Heatmap data={codeforcesHeatmap} title="Codeforces" />
+                      </div>
+                    )}
+                  </>
                 ) : (
-                  <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+                  <div className="text-center py-8 text-slate-400">
                     <p>Unable to load Codeforces stats</p>
                   </div>
                 )}
               </div>
             </div>
-
-            {/* Heatmap */}
-            {codeforcesUsername && Object.keys(codeforcesHeatmap).length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="p-6 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10"
-              >
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">
-                  Codeforces Activity Heatmap (Last 6 Months)
-                </h3>
-                <Heatmap data={codeforcesHeatmap} isDark={isDark} />
-              </motion.div>
-            )}
           </>
         )}
       </div>

@@ -15,28 +15,28 @@ const LinkedInIcon = () => (
 
 export default function Hero() {
   return (
-    <section className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 transition-colors duration-300">
+    <section className="min-h-screen flex items-center justify-center relative overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(99,102,241,0.2),_transparent_35%),linear-gradient(135deg,_#06070a_0%,_#111827_45%,_#0f172a_100%)]">
       {/* Animated Background Particles */}
       <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
+        {[...Array(15)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-2 h-2 bg-indigo-500 rounded-full opacity-30"
+            className="absolute w-1 h-1 bg-indigo-500 rounded-full"
             initial={{
-              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
-              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
+              x: Math.random() * 100 + '%',
+              y: Math.random() * 100 + '%',
             }}
             animate={{
-              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
-              y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 800),
+              x: [Math.random() * 100 + '%', Math.random() * 100 + '%', Math.random() * 100 + '%'],
+              y: [Math.random() * 100 + '%', Math.random() * 100 + '%', Math.random() * 100 + '%'],
             }}
             transition={{
-              duration: Math.random() * 10 + 10,
+              duration: Math.random() * 15 + 15,
               repeat: Infinity,
               repeatType: 'reverse',
             }}
             style={{
-              boxShadow: '0 0 10px #6366f1, 0 0 20px #6366f1',
+              boxShadow: '0 0 6px #6366f1, 0 0 12px #6366f1',
             }}
           />
         ))}
@@ -49,7 +49,7 @@ export default function Hero() {
           transition={{ duration: 0.6 }}
         >
           <motion.span
-            className="inline-block px-4 py-2 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-sm font-medium mb-6"
+            className="inline-block px-4 py-2 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-400/20 text-sm font-medium mb-6"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
@@ -58,7 +58,7 @@ export default function Hero() {
           </motion.span>
 
           <motion.h1
-            className="text-5xl md:text-7xl font-bold text-slate-900 dark:text-white mb-4"
+            className="text-5xl md:text-7xl font-bold text-slate-100 mb-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -76,7 +76,7 @@ export default function Hero() {
           </motion.h2>
 
           <motion.p
-            className="text-slate-600 dark:text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-10"
+            className="text-slate-300 text-lg md:text-xl max-w-2xl mx-auto mb-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
@@ -93,14 +93,19 @@ export default function Hero() {
           >
             <a
               href="#contact"
-              className="group flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl text-white font-semibold hover:shadow-lg hover:shadow-indigo-500/50 transition-all duration-300"
+              className="group relative flex items-center gap-2 px-8 py-4 rounded-2xl text-white font-semibold overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/40"
             >
-              Hire Me
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <span className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-cyan-500" />
+              <span className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-fuchsia-600 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_8px_rgba(110,231,183,0.8)]">
+                <span className="absolute inset-0 rounded-full bg-emerald-300 animate-ping opacity-75" />
+              </span>
+              <span className="relative">Start a project</span>
+              <ArrowRight className="relative w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
             </a>
             <a
               href="#projects"
-              className="flex items-center gap-2 px-8 py-4 bg-slate-200 dark:bg-white/10 backdrop-blur-sm border border-slate-300 dark:border-white/20 rounded-2xl text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-white/20 transition-all duration-300"
+              className="flex items-center gap-2 px-8 py-4 bg-slate-800/80 border border-slate-700 rounded-2xl text-slate-100 font-semibold hover:bg-slate-700 transition-all duration-300"
             >
               View Projects
             </a>
@@ -113,26 +118,26 @@ export default function Hero() {
             transition={{ delay: 0.8 }}
           >
             <a
-              href="https://github.com"
+              href="https://github.com/luvpee"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-3 rounded-xl bg-slate-200 dark:bg-white/10 border border-slate-300 dark:border-white/20 hover:bg-slate-300 dark:hover:bg-white/20 transition-all duration-300 hover:scale-110"
+              className="p-3 rounded-xl bg-slate-800/90 border border-slate-700 hover:bg-slate-700 transition-all duration-300 hover:scale-110 text-indigo-300"
             >
               <GithubIcon />
             </a>
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/lovepreet-singh-kaler/"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-3 rounded-xl bg-slate-200 dark:bg-white/10 border border-slate-300 dark:border-white/20 hover:bg-slate-300 dark:hover:bg-white/20 transition-all duration-300 hover:scale-110"
+              className="p-3 rounded-xl bg-slate-800/90 border border-slate-700 hover:bg-slate-700 transition-all duration-300 hover:scale-110 text-sky-300"
             >
               <LinkedInIcon />
             </a>
             <a
-              href="mailto:your.email@example.com"
-              className="p-3 rounded-xl bg-slate-200 dark:bg-white/10 border border-slate-300 dark:border-white/20 hover:bg-slate-300 dark:hover:bg-white/20 transition-all duration-300 hover:scale-110"
+              href="mailto:lovepreetsinghkaler@gmail.com"
+              className="p-3 rounded-xl bg-slate-800/90 border border-slate-700 hover:bg-slate-700 transition-all duration-300 hover:scale-110 text-slate-200"
             >
-              <Mail className="w-6 h-6 text-slate-700 dark:text-white" />
+              <Mail className="w-6 h-6" />
             </a>
           </motion.div>
         </motion.div>
@@ -144,9 +149,9 @@ export default function Hero() {
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 1.5, repeat: Infinity }}
       >
-        <div className="w-6 h-10 rounded-full border-2 border-slate-400 dark:border-white/30 flex justify-center pt-2">
+        <div className="w-6 h-10 rounded-full border-2 border-slate-500 flex justify-center pt-2">
           <motion.div
-            className="w-1.5 h-3 bg-slate-400 dark:bg-white/50 rounded-full"
+            className="w-1.5 h-3 bg-slate-500 rounded-full"
             animate={{ y: [0, 12, 0] }}
             transition={{ duration: 1.5, repeat: Infinity }}
           />

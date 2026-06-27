@@ -1,95 +1,170 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ============================================
+   Cyber / Neon / Synthwave theme
+   ============================================ */
 
 @theme {
-  --color-primary: #6366f1;
-  --color-secondary: #8b5cf6;
-  --color-accent: #a855f7;
+  --color-primary: #00d4ff;    /* electric blue */
+  --color-secondary: #ff2e92;  /* hot magenta */
+  --color-accent: #b6ff3c;     /* neon lime */
+  --color-cyan-glow: #00f0ff;
+}
+
+:root {
+  color-scheme: dark;
+  --bg: #05060a;
+  --bg-elev: #0a0d14;
+  --surface: #0b0e16;
+  --surface-2: #11151f;
+  --surface-3: #161c2a;
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --text-soft: #64748b;
+  --border: rgba(0, 212, 255, 0.10);
+  --border-strong: rgba(0, 212, 255, 0.22);
+
+  --neon-blue: #00d4ff;
+  --neon-magenta: #ff2e92;
+  --neon-lime: #b6ff3c;
+  --neon-purple: #a855f7;
 }
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+  color: var(--text);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 60% at 15% 0%, rgba(0, 212, 255, 0.10), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 85% 30%, rgba(255, 46, 146, 0.08), transparent 60%),
+    radial-gradient(ellipse 90% 70% at 50% 100%, rgba(168, 85, 247, 0.06), transparent 70%);
+  background-attachment: fixed;
 }
 
-/* Light Mode */
-:root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
-  --bg-card: rgba(255, 255, 255, 0.8);
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
-  --border-color: rgba(0, 0, 0, 0.1);
-  --nav-bg: rgba(255, 255, 255, 0.8);
+/* Subtle grid overlay for the synthwave feel — toggle by adding .grid-bg to a section */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(0, 212, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: -1px -1px;
 }
 
-/* Dark Mode */
-.dark {
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-card: rgba(30, 41, 59, 0.8);
-  --text-primary: #f1f5f9;
-  --text-secondary: #cbd5e1;
-  --text-muted: #64748b;
-  --border-color: rgba(255, 255, 255, 0.1);
-  --nav-bg: rgba(15, 23, 42, 0.9);
+/* Scanline overlay — very faint */
+.scanlines::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 212, 255, 0.025) 0px,
+    rgba(0, 212, 255, 0.025) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  z-index: 0;
 }
 
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
+#root {
+  min-height: 100vh;
+  position: relative;
 }
+
+/* ============================================
+   Gradient text utilities
+   ============================================ */
 
 .text-gradient {
   background-clip: text;
   color: transparent;
-  background-image: linear-gradient(to right, var(--color-primary), var(--color-secondary), var(--color-accent));
+  background-image: linear-gradient(90deg, #00d4ff 0%, #a855f7 50%, #ff2e92 100%);
 }
 
-.card-hover {
-  transition: all 0.3s ease;
-}
-.card-hover:hover {
-  transform: scale(1.02);
-  box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.2);
+.text-gradient-cyber {
+  background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(90deg, #00d4ff 0%, #00f0ff 40%, #b6ff3c 100%);
 }
 
-.glass {
-  background: var(--bg-card);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--border-color);
+.text-gradient-sunset {
+  background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(90deg, #ff2e92 0%, #a855f7 50%, #00d4ff 100%);
 }
 
-/* Section backgrounds */
-.bg-section-light {
-  background-color: var(--bg-secondary);
+/* ============================================
+   Neon glow utilities
+   ============================================ */
+
+.glow-blue {
+  box-shadow:
+    0 0 0 1px rgba(0, 212, 255, 0.4),
+    0 0 24px -4px rgba(0, 212, 255, 0.55),
+    0 0 60px -10px rgba(0, 212, 255, 0.35);
 }
 
-.text-primary-color {
-  color: var(--text-primary);
+.glow-magenta {
+  box-shadow:
+    0 0 0 1px rgba(255, 46, 146, 0.4),
+    0 0 24px -4px rgba(255, 46, 146, 0.55),
+    0 0 60px -10px rgba(255, 46, 146, 0.35);
 }
 
-.text-secondary-color {
-  color: var(--text-secondary);
+.glow-lime {
+  box-shadow:
+    0 0 0 1px rgba(182, 255, 60, 0.4),
+    0 0 24px -4px rgba(182, 255, 60, 0.45),
+    0 0 60px -10px rgba(182, 255, 60, 0.25);
 }
 
-.text-muted-color {
-  color: var(--text-muted);
+/* ============================================
+   Slate overrides — bring back the dark feel
+   ============================================ */
+
+.dark { color-scheme: dark; }
+
+.bg-white { background-color: var(--surface) !important; }
+.bg-slate-50 { background-color: var(--surface-2) !important; }
+.bg-slate-100 { background-color: var(--surface-3) !important; }
+.bg-slate-200 { background-color: #1f2738 !important; }
+
+.border-slate-200 { border-color: var(--border) !important; }
+.border-slate-300 { border-color: var(--border-strong) !important; }
+
+.text-slate-900 { color: var(--text) !important; }
+.text-slate-800 { color: #e2e8f0 !important; }
+.text-slate-700 { color: var(--text-muted) !important; }
+.text-slate-600 { color: var(--text-soft) !important; }
+.text-slate-500 { color: #64748b !important; }
+
+/* ============================================
+   Misc fixes
+   ============================================ */
+
+* { box-sizing: border-box; }
+img, video { max-width: 100%; }
+
+/* Selection — keep brand-consistent */
+::selection {
+  background: rgba(0, 212, 255, 0.35);
+  color: #fff;
 }
 
-.border-custom {
-  border-color: var(--border-color);
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #05060a; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00d4ff, #a855f7);
+  border-radius: 8px;
+  border: 2px solid #05060a;
 }
-
-.bg-card-custom {
-  background-color: var(--bg-card);
-}
-
-.bg-nav-custom {
-  background-color: var(--nav-bg);
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #00f0ff, #ff2e92);
 }

@@ -9,172 +9,63 @@ const GithubIcon = () => (
 
 const projects = [
   {
-    title: '[Project Name]',
-    description: 'A brief description of the project. Explain what it does, the problem it solves, and the impact it has.',
-    tech: ['React', 'Node.js', 'PostgreSQL', 'Tailwind'],
-    live: 'https://example.com',
-    github: 'https://github.com',
+    title: 'Distributed Network File System (NFS)',
+    description: 'A fault-tolerant distributed file system in C with TCP/IP sockets, POSIX threads, a Trie index, LRU cache, replication, and heartbeat-based failure detection.',
+    tech: ['C', 'TCP/IP', 'POSIX Threads', 'LRU Cache', 'Linux'],
+    live: null,
+    github: 'https://github.com/luvpee/Network-File-System',
     featured: true,
   },
   {
-    title: '[Project Name]',
-    description: 'Another amazing project showcasing your skills. Built with modern technologies and best practices.',
-    tech: ['Next.js', 'TypeScript', 'Prisma', 'Vercel'],
-    live: 'https://example.com',
-    github: 'https://github.com',
+    title: 'ArthMitra',
+    description: 'An AI-powered personal finance assistant with LangGraph-based multi-agent workflows, RAG over transaction history, and automated bank statement ETL.',
+    tech: ['Python', 'LangGraph', 'LangChain', 'Supabase', 'ChromaDB', 'Streamlit'],
+    live: null,
+    github: 'https://github.com/luvpee/arthmitra',
     featured: false,
   },
   {
-    title: '[Project Name]',
-    description: 'An innovative solution that demonstrates your technical prowess and creative thinking.',
-    tech: ['Vue.js', 'Firebase', 'GSAP', 'Stripe'],
-    live: 'https://example.com',
-    github: 'https://github.com',
-    featured: false,
-  },
-  {
-    title: '[Project Name]',
-    description: 'A full-stack application with real-time features and a seamless user experience.',
-    tech: ['React', 'Express', 'MongoDB', 'Socket.io'],
-    live: 'https://example.com',
-    github: 'https://github.com',
+    title: 'Campora',
+    description: 'A MERN platform for university clubs and events with real-time Socket.IO notifications, RBAC, and deployment on Render + MongoDB Atlas.',
+    tech: ['MongoDB', 'Express.js', 'React', 'Node.js', 'Socket.IO', 'Tailwind CSS'],
+    live: null,
+    github: 'https://github.com/luvpee/Campora',
     featured: false,
   },
 ];
 
 const ProjectCard = ({ project, index }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ delay: index * 0.1 }}
-    whileHover={{ y: -8 }}
-    className="group relative p-6 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-indigo-500/50 transition-all duration-300"
-  >
-    {project.featured && (
-      <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-500 text-xs font-semibold">
-        Featured
-      </div>
-    )}
-
-    <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3 group-hover:text-indigo-500 transition-all">
-      {project.title}
-    </h3>
-
-    <p className="text-slate-600 dark:text-slate-400 mb-4 line-clamp-2">{project.description}</p>
-
+  <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }} whileHover={{ y: -8, scale: 1.01 }} className={`group relative flex h-full flex-col p-6 rounded-2xl border transition-all duration-300 ${project.featured ? 'bg-gradient-to-br from-slate-900 to-slate-950 border-indigo-500/40 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]' : 'bg-slate-900/80 border-slate-800 hover:border-indigo-500/50'}`}>
+    {project.featured && <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-500 text-xs font-semibold">Featured</div>}
+    <div className="aspect-video rounded-2xl mb-5 bg-gradient-to-br from-indigo-500/15 via-slate-800 to-purple-500/15 flex items-center justify-center">
+      <span className="text-4xl">⚡</span>
+    </div>
+    <h3 className="text-xl font-semibold text-slate-100 mb-3 group-hover:text-indigo-500 transition-all">{project.title}</h3>
+    <p className="text-slate-400 mb-4 line-clamp-3 min-h-[4.5rem]">{project.description}</p>
     <div className="flex flex-wrap gap-2 mb-6">
-      {project.tech.map((t) => (
-        <span key={t} className="px-3 py-1 rounded-full bg-slate-200 dark:bg-white/5 text-xs text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10">
-          {t}
-        </span>
-      ))}
+      {project.tech.map((t) => (<span key={t} className="px-3 py-1 rounded-full bg-slate-800 text-xs text-slate-300 border border-slate-700">{t}</span>))}
     </div>
-
-    <div className="flex gap-4">
-      <a href={project.live} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-500 transition-colors">
-        <ExternalLink className="w-4 h-4" />
-        Live Demo
-      </a>
-      <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300 hover:text-indigo-500 transition-colors">
-        <GithubIcon />
-        Code
-      </a>
-    </div>
-  </motion.div>
-);
-
-const FeaturedProject = ({ project, index }) => (
-  <motion.div
-    initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-    whileInView={{ opacity: 1, x: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.6 }}
-    className="group relative grid md:grid-cols-2 gap-8 p-8 rounded-3xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-indigo-500/30 transition-all duration-500"
-  >
-    <div className={index % 2 === 1 ? 'md:order-2' : ''}>
-      <div className="aspect-video rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center">
-        <span className="text-6xl">🚀</span>
-      </div>
-    </div>
-
-    <div className="flex flex-col justify-center">
-      <div className="flex items-center gap-2 mb-4">
-        <span className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-500 text-sm font-semibold">
-          Featured Project
-        </span>
-      </div>
-
-      <h3 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 group-hover:text-indigo-500 transition-all">
-        {project.title}
-      </h3>
-
-      <p className="text-slate-600 dark:text-slate-400 mb-6">{project.description}</p>
-
-      <div className="flex flex-wrap gap-2 mb-6">
-        {project.tech.map((t) => (
-          <span key={t} className="px-3 py-1 rounded-full bg-slate-200 dark:bg-white/5 text-sm text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10">
-            {t}
-          </span>
-        ))}
-      </div>
-
-      <div className="flex gap-4">
-        <a href={project.live} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold hover:shadow-lg hover:shadow-indigo-500/50 transition-all">
-          View Live
-          <ArrowUpRight className="w-4 h-4" />
-        </a>
-        <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-200 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-white/10 transition-all">
-          <GithubIcon />
-          Source
-        </a>
-      </div>
+    <div className="mt-auto flex flex-wrap gap-4">
+      {project.live && <a href={project.live} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-slate-400 hover:text-indigo-500 transition-colors"><ExternalLink className="w-4 h-4" />Live Demo</a>}
+      <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-slate-400 hover:text-indigo-500 transition-colors"><GithubIcon />Code</a>
     </div>
   </motion.div>
 );
 
 export default function Projects() {
   return (
-    <section id="projects" className="py-24 px-6 bg-white dark:bg-slate-900 transition-colors duration-300">
+    <section id="projects" className="py-24 px-6 bg-[#0b0f14]">
       <div className="max-w-6xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <span className="text-indigo-500 font-semibold text-sm uppercase tracking-wider">
-            My Work
-          </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mt-2">
-            Featured Projects
-          </h2>
-          <p className="text-slate-600 dark:text-slate-400 mt-4 max-w-2xl mx-auto">
-            A selection of projects that showcase my skills and passion for development
-          </p>
+        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center mb-16">
+          <span className="text-indigo-500 font-semibold text-sm uppercase tracking-wider">My Work</span>
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-100 mt-2">Featured Projects</h2>
+          <p className="text-slate-400 mt-4 max-w-2xl mx-auto">A selection of projects that showcase my skills</p>
         </motion.div>
-
-        <div className="mb-16">
-          <FeaturedProject project={projects[0]} index={0} />
+        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch">
+          {projects.map((project, index) => (<ProjectCard key={project.title} project={project} index={index} />))}
         </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.slice(1).map((project, index) => (
-            <ProjectCard key={project.title} project={project} index={index} />
-          ))}
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="text-center mt-12"
-        >
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-slate-200 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-white/10 transition-all">
-            View All Projects on GitHub
-            <ArrowUpRight className="w-5 h-5" />
-          </a>
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="text-center mt-12">
+          <a href="https://github.com/luvpee" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-slate-900/80 border border-slate-800 text-slate-100 font-semibold hover:bg-slate-800 transition-all">View All on GitHub <ArrowUpRight className="w-5 h-5" /></a>
         </motion.div>
       </div>
     </section>
