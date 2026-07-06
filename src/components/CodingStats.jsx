@@ -2,9 +2,13 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Code, Star, CheckCircle, Zap, RefreshCw, Flame, TrendingUp, Award } from 'lucide-react';
 
-const BASE = 'https://alfa-leetcode-api.onrender.com';
+// Single endpoint — returns solved breakdown, ranking, and submissionCalendar
+// in one call. The previous multi-endpoint proxy (alfa-leetcode-api) was
+// rate-limited (HTTP 429) far too often to be reliable, so we use a single
+// consolidated API instead.
+const BASE = 'https://leetcode-stats.tashif.codes';
 const CACHE_KEY = 'lc-stats-cache';
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24h
+const CACHE_TTL_MS = 2 * 60 * 60 * 1000; // 2h — stats can move daily
 
 // Static fallback with the verified values. Used only if the cache is empty
 // AND the live API is rate-limiting, so the card is never blank.
@@ -71,79 +75,66 @@ function readInitialLeetCode() {
   };
 }
 
-// LeetCode: profile + solved breakdown
-async function fetchLeetCodeProfile(username) {
+// LeetCode: single consolidated fetch. The tashif API returns solved counts,
+// ranking, and the submission calendar together, so we can avoid the four
+// fan-out calls the previous proxy required and dodge the rate limits that
+// came with them.
+async function fetchLeetCodeAll(username) {
   try {
     const res = await fetch(`${BASE}/${username}`);
-    if (!res.ok) throw new Error('profile fetch failed');
+    if (!res.ok) throw new Error(`fetch failed (${res.status})`);
     const d = await res.json();
+    if (d.status !== 'success') throw new Error(`bad status: ${d.status}`);
+
+    // submissionCalendar is an object of {unixTs: count} on the tashif API
+    // (NOT a stringified blob). Older responses from a different proxy used
+    // a JSON-stringified shape, so handle both defensively. Convert to the
+    // {YYYY-MM-DD: count} shape the heatmap expects.
+    let calendar = {};
+    try {
+      const raw =
+        typeof d.submissionCalendar === 'string'
+          ? JSON.parse(d.submissionCalendar || '{}')
+          : d.submissionCalendar || {};
+      Object.entries(raw).forEach(([ts, count]) => {
+        const date = new Date(Number(ts) * 1000).toISOString().split('T')[0];
+        calendar[date] = (calendar[date] || 0) + count;
+      });
+    } catch {
+      /* leave calendar empty */
+    }
+
     return {
-      ranking: d.ranking || 0,
-      reputation: d.reputation || 0,
+      profile: { ranking: d.ranking || 0, reputation: d.reputation || 0 },
+      solved: {
+        totalSolved: d.totalSolved || 0,
+        easySolved: d.easySolved || 0,
+        mediumSolved: d.mediumSolved || 0,
+        hardSolved: d.hardSolved || 0,
+        totalEasy: d.totalEasy || 0,
+        totalMedium: d.totalMedium || 0,
+        totalHard: d.totalHard || 0,
+        totalQuestions: d.totalQuestions || 0,
+        acceptanceRate: d.acceptanceRate || 0,
+      },
+      // tashif's API doesn't expose contestGlobalRanking or contestTopPercentage,
+      // so we surface only what it does. The card already handles missing
+      // topPct gracefully (no "Top X%" sub-label is rendered when it's 0).
+      contest: {
+        contestRating: Math.round(d.data?.currentRating || 0),
+        contestGlobalRanking: 0,
+        contestTopPercentage: 0,
+        contestsAttended: d.data?.totalContests || 0,
+      },
+      calendar: {
+        calendar,
+        streak: 0,
+        totalActiveDays: d.data?.totalActiveDays || 0,
+        activeYears: [],
+      },
     };
   } catch (err) {
-    console.error('LeetCode profile error:', err);
-    return null;
-  }
-}
-
-async function fetchLeetCodeSolved(username) {
-  try {
-    const res = await fetch(`${BASE}/${username}/solved`);
-    if (!res.ok) throw new Error('solved fetch failed');
-    const d = await res.json();
-    return {
-      totalSolved: d.solvedProblem || 0,
-      easySolved: d.easySolved || 0,
-      mediumSolved: d.mediumSolved || 0,
-      hardSolved: d.hardSolved || 0,
-      totalEasy: 951,
-      totalMedium: 2074,
-      totalHard: 948,
-      totalQuestions: 3973,
-      acceptanceRate: d.totalSubmissionNum && d.totalSubmissionNum[0]
-        ? Math.round((d.acSubmissionNum[0].submissions / d.totalSubmissionNum[0].submissions) * 1000) / 10
-        : 0,
-    };
-  } catch (err) {
-    console.error('LeetCode solved error:', err);
-    return null;
-  }
-}
-
-async function fetchLeetCodeContest(username) {
-  try {
-    const res = await fetch(`${BASE}/${username}/contest`);
-    if (!res.ok) throw new Error('contest fetch failed');
-    const d = await res.json();
-    return {
-      contestRating: Math.round(d.contestRating || 0),
-      contestGlobalRanking: d.contestGlobalRanking || 0,
-      contestTopPercentage: d.contestTopPercentage || 0,
-      contestsAttended: d.contestAttend || 0,
-    };
-  } catch (err) {
-    console.error('LeetCode contest error:', err);
-    return null;
-  }
-}
-
-async function fetchLeetCodeCalendar(username) {
-  try {
-    const res = await fetch(`${BASE}/${username}/calendar`);
-    if (!res.ok) throw new Error(`calendar fetch failed (${res.status})`);
-    const d = await res.json();
-    const raw = JSON.parse(d.submissionCalendar || '{}');
-    const calendar = {};
-    Object.entries(raw).forEach(([ts, count]) => {
-      const date = new Date(Number(ts) * 1000).toISOString().split('T')[0];
-      calendar[date] = (calendar[date] || 0) + count;
-    });
-    return { calendar, streak: d.streak || 0, totalActiveDays: d.totalActiveDays || 0, activeYears: d.activeYears || [] };
-  } catch (err) {
-    console.error('LeetCode calendar error:', err.message);
-    // Return null (not an empty object) so the caller can detect failure and
-    // fall back to cache or static values.
+    console.error('LeetCode fetch error:', err.message);
     return null;
   }
 }
@@ -473,6 +464,7 @@ function LeetCodeCard({
   calendarUnavailable,
   onRetryCalendar,
   retryingCalendar,
+  lastFetchError,
 }) {
   const calendarData = calendar?.calendar || {};
   // Only short-circuit to the empty state when we have absolutely nothing to show
@@ -519,6 +511,9 @@ function LeetCodeCard({
             </a>
             {lastUpdatedLabel && (
               <p className="text-[10px] text-[#6e747e] font-mono mt-0.5">{lastUpdatedLabel}</p>
+            )}
+            {lastFetchError && (
+              <p className="text-[10px] text-[#f87171] font-mono mt-0.5">{lastFetchError}</p>
             )}
           </div>
         </div>
@@ -733,22 +728,23 @@ export default function CodingStats({ leetcodeUsername, codeforcesUsername }) {
     !(initialLC.calendar && Object.keys(initialLC.calendar.calendar || {}).length > 0)
   );
   const [retryingCalendar, setRetryingCalendar] = useState(false);
+  const [lastFetchError, setLastFetchError] = useState(null);
   const retryTimerRef = useState({ current: null })[0];
 
   const tryRefreshCalendar = async () => {
     if (!leetcodeUsername || retryingCalendar) return;
     setRetryingCalendar(true);
     try {
-      const cal = await fetchLeetCodeCalendar(leetcodeUsername);
-      if (cal && Object.keys(cal.calendar || {}).length > 0) {
-        setCalendar(cal);
+      const data = await fetchLeetCodeAll(leetcodeUsername);
+      if (data && Object.keys(data.calendar?.calendar || {}).length > 0) {
+        setCalendar(data.calendar);
         setCalendarUnavailable(false);
         try {
           const raw = localStorage.getItem(CACHE_KEY);
           const existing = raw ? JSON.parse(raw).data || {} : {};
           localStorage.setItem(
             CACHE_KEY,
-            JSON.stringify({ timestamp: Date.now(), data: { ...existing, calendar: cal } })
+            JSON.stringify({ timestamp: Date.now(), data: { ...existing, calendar: data.calendar } })
           );
           setCacheTimestamp(Date.now());
         } catch {
@@ -767,57 +763,31 @@ export default function CodingStats({ leetcodeUsername, codeforcesUsername }) {
     setLoading(true);
     try {
       if (leetcodeUsername) {
-        const [p, s, c, cal] = await Promise.all([
-          fetchLeetCodeProfile(leetcodeUsername),
-          fetchLeetCodeSolved(leetcodeUsername),
-          fetchLeetCodeContest(leetcodeUsername),
-          fetchLeetCodeCalendar(leetcodeUsername),
-        ]);
-        // If every endpoint failed, fall back to the static verified values
-        // so the card never goes empty.
-        const allFailed = !p && !s && !c && (!cal || Object.keys(cal.calendar || {}).length === 0);
-        const profileNext = p ?? (allFailed ? FALLBACK_LC.profile : profile);
-        const solvedNext = s ?? (allFailed ? FALLBACK_LC.solved : solved);
-        const contestNext = c ?? (allFailed ? FALLBACK_LC.contest : contest);
-        const calendarNext =
-          cal && Object.keys(cal.calendar || {}).length > 0
-            ? cal
-            : allFailed
-            ? FALLBACK_LC.calendar
-            : calendar;
-
-        setProfile(profileNext);
-        setSolved(solvedNext);
-        setContest(contestNext);
-        setCalendar(calendarNext);
-        setCalendarUnavailable(
-          !calendarNext || Object.keys(calendarNext.calendar || {}).length === 0
-        );
-
-        // Persist successful fetches to cache (merge with whatever else exists).
-        // If every endpoint failed, leave the existing cache alone — it's still
-        // better than the static fallback.
-        try {
-          const existing = (() => {
-            try {
-              return JSON.parse(localStorage.getItem(CACHE_KEY) || '{}').data || {};
-            } catch {
-              return {};
-            }
-          })();
-          if (!allFailed) {
-            const merged = {
-              profile: profileNext,
-              solved: solvedNext,
-              contest: contestNext,
-              calendar: calendarNext,
-            };
-            localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data: merged }));
+        const data = await fetchLeetCodeAll(leetcodeUsername);
+        if (data) {
+          setProfile(data.profile);
+          setSolved(data.solved);
+          setContest(data.contest);
+          setCalendar(data.calendar);
+          setCalendarUnavailable(Object.keys(data.calendar?.calendar || {}).length === 0);
+          setLastFetchError(null);
+          // Persist to cache.
+          try {
+            localStorage.setItem(
+              CACHE_KEY,
+              JSON.stringify({ timestamp: Date.now(), data })
+            );
             setCacheTimestamp(Date.now());
             setCacheStale(false);
+          } catch {
+            /* ignore */
           }
-        } catch {
-          /* ignore */
+        } else {
+          // Live fetch failed. Keep whatever's on screen, mark as stale, and
+          // surface the error so the card tells the user instead of looking
+          // silently frozen.
+          setLastFetchError('couldn’t refresh — showing cached data');
+          setCacheStale(true);
         }
       }
       if (codeforcesUsername) {
@@ -845,10 +815,11 @@ export default function CodingStats({ leetcodeUsername, codeforcesUsername }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [leetcodeUsername, codeforcesUsername]);
 
-  // If the calendar endpoint was rate-limited, keep retrying with exponential
-  // backoff so the heatmap fills in automatically once the rate limit lifts.
+  // If the initial fetch failed, keep retrying with exponential backoff so
+  // the card fills in automatically once the API recovers. Stops as soon as
+  // we get a successful response.
   useEffect(() => {
-    if (!leetcodeUsername || !calendarUnavailable) return;
+    if (!leetcodeUsername || !lastFetchError) return;
 
     let attempts = 0;
     let cancelled = false;
@@ -857,21 +828,24 @@ export default function CodingStats({ leetcodeUsername, codeforcesUsername }) {
       // 10s, 20s, 40s, 80s, capped at 120s — keeps trying for a while.
       const delay = Math.min(10_000 * 2 ** attempts, 120_000);
       retryTimerRef.current = setTimeout(async () => {
-        attempts += 1;
-        const cal = await fetchLeetCodeCalendar(leetcodeUsername);
         if (cancelled) return;
-        if (cal && Object.keys(cal.calendar || {}).length > 0) {
-          setCalendar(cal);
-          setCalendarUnavailable(false);
+        attempts += 1;
+        const data = await fetchLeetCodeAll(leetcodeUsername);
+        if (cancelled) return;
+        if (data) {
+          setProfile(data.profile);
+          setSolved(data.solved);
+          setContest(data.contest);
+          setCalendar(data.calendar);
+          setCalendarUnavailable(Object.keys(data.calendar?.calendar || {}).length === 0);
+          setLastFetchError(null);
+          setCacheTimestamp(Date.now());
+          setCacheStale(false);
           try {
-            const raw = localStorage.getItem(CACHE_KEY);
-            const existing = raw ? JSON.parse(raw).data || {} : {};
             localStorage.setItem(
               CACHE_KEY,
-              JSON.stringify({ timestamp: Date.now(), data: { ...existing, calendar: cal } })
+              JSON.stringify({ timestamp: Date.now(), data })
             );
-            setCacheTimestamp(Date.now());
-            setCacheStale(false);
           } catch {
             /* ignore */
           }
@@ -887,7 +861,7 @@ export default function CodingStats({ leetcodeUsername, codeforcesUsername }) {
       if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [leetcodeUsername, calendarUnavailable]);
+  }, [leetcodeUsername, lastFetchError]);
 
   return (
     <section id="coding" className="relative py-24 px-6 bg-[#0e1014] overflow-hidden">
@@ -943,6 +917,7 @@ export default function CodingStats({ leetcodeUsername, codeforcesUsername }) {
               calendarUnavailable={calendarUnavailable}
               onRetryCalendar={tryRefreshCalendar}
               retryingCalendar={retryingCalendar}
+              lastFetchError={lastFetchError}
             />
             <CodeforcesCard
               stats={cfStats}
